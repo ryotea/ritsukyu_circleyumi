@@ -3,74 +3,74 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>動的な表</title>
+    <title>サークル弓一覧</title>
     <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
     <style>
-        /* ここにCSSを追加 */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
 
+        th, td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
 
-table {
-    width: 100%;
-    border-collapse: collapse;
-}
+        th {
+            cursor: pointer;
+            background-color: #f2f2f2;
+        }
 
-th, td {
-    padding: 8px;
-    text-align: left;
-    border-bottom: 1px solid #ddd;
-}
-
-th {
-    cursor: pointer;
-    background-color: #f2f2f2;
-}
-
-tr:hover {
-    background-color: #f5f5f5;
-}
-
-
-
-
-
+        tr:hover {
+            background-color: #f5f5f5;
+        }
     </style>
 </head>
 <body>
     <input type="button" value="行を追加" onclick="addRow()">
-
-    <!-- チェックボックスの追加 -->
     <label>
       <input type="checkbox" id="toggleEmptyRows" checked> 使用中の弓も表示
     </label>
-
-    <label>空欄判定する列:
+    <label>
       <select id="columnToCheck">
+        <!--
         <option value="0">弓力</option>
         <option value="1">番号</option>
         <option value="2">長さ</option>
         <option value="3">銘柄</option>
+        -->
         <option value="4">使用者</option>
+        <!--
         <option value="5">備考1</option>
         <option value="6">備考2</option>
+        -->
       </select>
     </label>
-
-    <br>
-    <br>
-    <table id="myTable" class="display">
+	<br>
+<div>
+    <label><input type="checkbox" class="toggleColumn" data-column="0" checked> 弓力</label>
+    <label><input type="checkbox" class="toggleColumn" data-column="1" checked> 番号</label>
+    <label><input type="checkbox" class="toggleColumn" data-column="2" checked> 長さ</label>
+    <label><input type="checkbox" class="toggleColumn" data-column="3" checked> 銘柄</label>
+    <label><input type="checkbox" class="toggleColumn" data-column="4" checked> 使用者</label>
+    <label><input type="checkbox" class="toggleColumn" data-column="5" checked> 備考1</label>
+    <label><input type="checkbox" class="toggleColumn" data-column="6" checked> 備考2</label>
+</div>
+    <table id="myTable">
         <thead>
             <tr>
-                <th onclick="sortTable(0)">弓力</th>
-                <th onclick="sortTable(1)">番号</th>
-                <th onclick="sortTable(2)">長さ</th>
-                <th onclick="sortTable(3)">銘柄</th>
-                <th onclick="sortTable(4)">使用者</th>
-                <th onclick="sortTable(5)">備考1</th>
-                <th onclick="sortTable(6)">備考2</th>
+                <th>弓力</th>
+                <th>番号</th>
+                <th>長さ</th>
+                <th>銘柄</th>
+                <th>使用者</th>
+                <th>備考1</th>
+                <th>備考2</th>
             </tr>
         </thead>
         <tbody>
-            <!-- ここに表のデータを追加 -->
+             <!-- ここにデータ行が入ります -->
 
 <tr>
     <td>7</td>
@@ -382,17 +382,14 @@ tr:hover {
 </tr>
 
 
+
+
         </tbody>
     </table>
-
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
     <script>
-
-        // ここにJavaScriptを追加
-$(document).ready(function () {
-    // DataTablesを初期化
-    let table = $('#myTable').DataTable({
+        let table = $('#myTable').DataTable({
         "paging": false,
         "lengthChange": false,
         "searching": true,
@@ -400,35 +397,32 @@ $(document).ready(function () {
         "info": true,
         "autoWidth": false,
     "responsive": true,
-});
+        });
 
-// 行を追加する関数
-function addRow() {
-    table.row.add([
-        '新しいデータ',
-        '新しいデータ',
-        '新しいデータ',
-        '新しいデータ',
-        '新しいデータ',
-        '新しいデータ',
-        '新しいデータ'
-    ]).draw();
-}
+        function addRow() {
+            table.row.add([
+                '弓力データ',
+                '番号データ',
+                '長さデータ',
+                '銘柄データ',
+                '使用者データ',
+                '備考1データ',
+                '備考2データ'
+            ]).draw();
+        }
 
-// 空欄の行を表示するチェックボックスの状態を取得
-document.getElementById('toggleEmptyRows').addEventListener('change', function () {
-    let showEmptyRows = this.checked;
-    let columnToCheck = parseInt(document.getElementById('columnToCheck').value);
+        $('#toggleEmptyRows').on('change', function() {
+            let columnIndex = $('#columnToCheck').val();
+            let showEmptyRows = this.checked;
 
-    // 表示する列を切り替える
-    if (showEmptyRows) {
-        table.columns(columnToCheck).search('').draw();
-    } else {
-        table.columns(columnToCheck).search('^\\s*$', 'i', true).draw();
-    }
-});
+            table.column(columnIndex).search(showEmptyRows ? '' : '^\\s*$', true, false).draw();
+        });
 
-});
-</script>
+        $('.toggleColumn').on('change', function() {
+            let column = table.column($(this).data('column'));
+            column.visible(!column.visible());
+        });
+    </script>
 </body>
 </html>
+
